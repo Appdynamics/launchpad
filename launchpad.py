@@ -4,8 +4,11 @@ from colorama import init as colorama_init
 
 from routines.routine import begin_routine
 from util.appd_api.appd_api import AppdApi, ApiError
-from util.click_utils import *
-from util.yaspin_utils import *
+from util.click_utils import DynamicOptionPrompt, parse_account_name_from_host, parse_port_number_from_host, end_section
+from util.yaspin_utils import as_spinner
+from util.logging_wrapper import httpclient_logging
+
+import click
 
 
 @click.command()
@@ -58,12 +61,12 @@ def main(host: str, port: int, ssl: bool, accountname: str, username: str, passw
     if response.status_code is not 200:
         click.echo(f"Controller Login Failed With Code {response.status_code}")
         logging.error(f"Controller Login Failed With Code {response.status_code}")
-        click.echo("Exiting.")
-        logging.error("Exiting.")
+        click.echo("Exiting")
+        logging.error("Exiting")
         return
     else:
-        logging.info(f"Successfully Logged into controller {host}.")
-        click.echo(f"Successfully Logged into controller {host}.")
+        logging.info(f"Successfully Logged into controller {host}")
+        click.echo(f"Successfully Logged into controller {host}")
     end_section()
 
     # Initialization successful, begin main routine.
@@ -77,6 +80,7 @@ if __name__ == '__main__':
                         format='%(asctime)s %(levelname)s: %(message)s',
                         datefmt='%m/%d/%Y %H:%M:%S')
     colorama_init(autoreset=True)
+    httpclient_logging()
 
     try:
         main()

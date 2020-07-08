@@ -1,0 +1,7 @@
+{
+  "agentType": "APP_AGENT",
+  "attachedEntity": {
+    "entityId": $APPLICATION_ID,
+    "entityType": "APPLICATION"
+  }
+}
