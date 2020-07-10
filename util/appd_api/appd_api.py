@@ -65,7 +65,6 @@ class AppdApi(Consumer):
             .replace("$APPLICATION_ID", str(application_id))
         match_configs = self.get_service_endpoint_match_configs(body=disable_servlet_sep_body)
 
-        print(match_configs)
         responses = []
         for config in match_configs:
             config.enabled = False
@@ -79,4 +78,10 @@ class AppdApi(Consumer):
             response.status_code = next(iter(status_codes))
         else:
             response.status_code = ','.join(str(status_code) for status_code in status_codes)
+        return response
+
+    def deploy_dashboard_helper(self, application_id, dashboard_type):
+        print("Deploying Dashboard " + dashboard_type + " on application " + str(application_id))
+        response = Response()
+        response.status_code = 200
         return response
