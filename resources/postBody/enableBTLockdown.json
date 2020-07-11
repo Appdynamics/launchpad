@@ -1,6 +1,6 @@
 {
   "isBtLockDownEnabled": true,
-  "isBtAutoCleanupEnabled": true,
+  "isBtAutoCleanupEnabled": false,
   "btAutoCleanupTimeFrame": 15,
   "btAutoCleanupCallCountThreshold": 1
 }

@@ -1,21 +1,20 @@
 import dataclasses
 import json
-from dataclasses import field
 from typing import List
 
 import marshmallow
-from marshmallow import post_dump, fields
 from marshmallow_dataclass import dataclass
 
 
-# ignore unknown properties
 class SchemaBase(marshmallow.Schema):
+    """Ignore unknown properties"""
+
     class Meta:
         unknown = getattr(marshmallow, "EXCLUDE", None)
 
 
-def dataclass_to_json(dataclass: dataclasses.dataclass):
-    return json.dumps(dataclasses.asdict(dataclass))
+def dataclass_to_json(clzz: dataclasses.dataclass):
+    return json.dumps(dataclasses.asdict(clzz))
 
 
 @dataclass(base_schema=SchemaBase)
@@ -24,9 +23,10 @@ class Application:
     id: int
 
 
-"""Used for call to get all existing SEP configs"""
 @dataclass(base_schema=SchemaBase)
 class ServiceEndpointMatchConfig:
+    """Used for call to get all existing SEP configs"""
+
     @dataclass(base_schema=SchemaBase)
     class DiscoveryConfig:
         @dataclass(base_schema=SchemaBase)

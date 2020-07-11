@@ -1,6 +1,6 @@
 import logging
 
-from colorama import init as colorama_init
+from colorama import init as colorama_init, Fore
 
 from routines.routine import begin_routine
 from util.appd_api.appd_api import AppdApi, ApiError
@@ -65,8 +65,8 @@ def main(host: str, port: int, ssl: bool, accountname: str, username: str, passw
         logging.error("Exiting")
         return
     else:
-        logging.info(f"Successfully Logged into controller {host}")
-        click.echo(f"Successfully Logged into controller {host}")
+        logging.info(f"Successfully Connected to Controller {host}")
+        click.echo(Fore.GREEN + f"Successfully Connected to Controller {host}")
     end_section()
 
     # Initialization successful, begin main routine.

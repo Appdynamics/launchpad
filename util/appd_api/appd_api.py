@@ -81,7 +81,47 @@ class AppdApi(Consumer):
         return response
 
     def deploy_dashboard_helper(self, application_id, dashboard_type):
-        print("Deploying Dashboard " + dashboard_type + " on application " + str(application_id))
+        # print("Deploying Dashboard " + dashboard_type + " on application " + str(application_id))
+        response = Response()
+        response.status_code = 200
+        return response
+
+    def deploy_healthrule_helper(self, application_id, healthrule):
+        # print("Deploying HealthRule " + healthrule + " on application " + str(application_id))
+        response = Response()
+        response.status_code = 200
+        return response
+
+    def deploy_email_template(self, application_id):
+        # print("Deploying Email Template on application " + str(application_id))
+        response = Response()
+        response.status_code = 200
+        return response
+
+
+    def deploy_http_request_template_helper(self, type):
+        # print("Deploying HTTP Request Template " + type)
+        response = Response()
+        response.status_code = 200
+        return response
+
+
+    def deploy_snow_template(self, application_id):
+        # print("Deploying ServiceNow Template on application " + str(application_id))
+        response = Response()
+        response.status_code = 200
+        return response
+
+
+    def deploy_netcool_template(self, application_id):
+        # print("Deploying NetCool Template on application " + str(application_id))
+        response = Response()
+        response.status_code = 200
+        return response
+
+
+    def deploy_pagerduty_template(self, application_id):
+        # print("Deploying PagerDuty Template on application " + str(application_id))
         response = Response()
         response.status_code = 200
         return response
