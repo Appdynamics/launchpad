@@ -1,6 +1,6 @@
 # Launchpad
 
-This project aims to provide a quick and easy way to provide newly onboarded AppDynamics applications with well crafted defaults.
+This project aims to provide a CLI interface for rapidly deploying and applying standardized configuration artifacts for AppDynamics applications.
 
 <p align="center">
   <img src="https://github.com/AppDynamics/launchpad/blob/master/resources/screencap.png"/>
