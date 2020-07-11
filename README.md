@@ -2,6 +2,10 @@
 
 This project aims to provide a quick and easy way to provide newly onboarded AppDynamics applications with well crafted defaults.
 
+<p align="center">
+  <img src="https://github.com/AppDynamics/launchpad/blob/master/resources/screencap.png"/>
+</p>
+
 ## Supported Scenarios
 
 The following scenarios are currently functional.
