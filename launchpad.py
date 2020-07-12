@@ -2,47 +2,17 @@ import logging
 
 from colorama import init as colorama_init, Fore
 
-from routines.routine import begin_routine
+from routines.routine import all_options
+from routines.routine_runner import begin_routine
 from util.appd_api.appd_api import AppdApi, ApiError
-from util.click_utils import DynamicOptionPrompt, parse_account_name_from_host, parse_port_number_from_host, end_section
+from util.click_utils import end_section, appd_api
 from util.yaspin_utils import as_spinner
 from util.logging_wrapper import httpclient_logging
 
 import click
 
 
-@click.command()
-@click.option('--host',
-              prompt=True,
-              help='acme.saas.appdynamics.com')
-@click.option('--port',
-              prompt=True,
-              cls=DynamicOptionPrompt,
-              default_option='host',
-              default=lambda x: parse_port_number_from_host(x),
-              help="""
-              \b
-              SaaS: 443
-              On Prem: 8090""")
-@click.option('--ssl/--no-ssl',
-              prompt=True,
-              is_flag=True,
-              default=True)
-@click.option('--accountname',
-              prompt=True,
-              cls=DynamicOptionPrompt,
-              default_option='host',
-              default=lambda x: parse_account_name_from_host(x),
-              help="""
-              \b
-              SaaS: first segment of controller host
-              On Prem: customer1""")
-@click.option('--username',
-              prompt=True,
-              help='must use local account')
-@click.option('--password',
-              prompt=True,
-              hide_input=True)
+@appd_api
 def main(host: str, port: int, ssl: bool, accountname: str, username: str, password: str):
     """
     This program automates many common AppDynamics Application onboarding activities.
@@ -71,7 +41,7 @@ def main(host: str, port: int, ssl: bool, accountname: str, username: str, passw
 
     # Initialization successful, begin main routine.
     logging.info("Initialization successful, begin main routine.")
-    begin_routine(controller)
+    begin_routine(controller, all_options)
 
 
 if __name__ == '__main__':

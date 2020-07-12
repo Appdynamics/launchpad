@@ -44,6 +44,7 @@ class Log:
 """Logging wrapper for HTTP calls, set to DEBUG by default"""
 httpclient_logger = logging.getLogger("http.client")
 
+
 def httpclient_logging(level=logging.DEBUG):
     """Enable HTTPConnection debug logging to the logging framework"""
 
