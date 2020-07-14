@@ -1,21 +1,23 @@
 import logging
 
+from click import Context
 from colorama import init as colorama_init, Fore
 
+from appd_api.appd_controller_service import AppDControllerService
 from routines.routine import all_options
 from routines.routine_runner import begin_routine
-from util.appd_api.appd_api import AppdApi, ApiError
+from appd_api.appd_controller import ApiError
 from util.click_utils import end_section, appd_api
-from util.yaspin_utils import as_spinner
+from util.sys_utils import exit_with_message
 from util.logging_wrapper import httpclient_logging
 
 import click
 
 
 @appd_api
-def main(host: str, port: int, ssl: bool, accountname: str, username: str, password: str):
+def main(host: str, port: int, ssl: bool, accountname: str, username: str, pwd: str):
     """
-    This program automates many common AppDynamics Application onboarding activities.
+    Automate AppDynamics Application onboarding activities.
     """
 
     # Print splash image
@@ -23,17 +25,11 @@ def main(host: str, port: int, ssl: bool, accountname: str, username: str, passw
     click.echo(f"{f.read()}")
     end_section()
 
-    logging.info("Attempt controller connection.")
-    connection_url = f'{"https" if ssl else "http"}://{host}:{port}'
-    auth = (f'{username}@{accountname}', password)
-    controller = AppdApi(base_url=connection_url, auth=auth)
-    response = as_spinner(fn=controller.login, text=f"Attempting Login for Controller {host}")
-    if response.status_code is not 200:
-        click.echo(f"Controller Login Failed With Code {response.status_code}")
-        logging.error(f"Controller Login Failed With Code {response.status_code}")
-        click.echo("Exiting")
-        logging.error("Exiting")
-        return
+    controller_service = AppDControllerService(host, port, ssl, accountname, username, pwd)
+    result = controller_service.login_to_controller()
+
+    if result.error is not None:
+        exit_with_message(f"Controller Login Failed With Code {result.error.msg}")
     else:
         logging.info(f"Successfully Connected to Controller {host}")
         click.echo(Fore.GREEN + f"Successfully Connected to Controller {host}")
@@ -41,7 +37,7 @@ def main(host: str, port: int, ssl: bool, accountname: str, username: str, passw
 
     # Initialization successful, begin main routine.
     logging.info("Initialization successful, begin main routine.")
-    begin_routine(controller, all_options)
+    begin_routine(controller_service, all_options)
 
 
 if __name__ == '__main__':

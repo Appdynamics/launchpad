@@ -3,16 +3,24 @@ import time
 
 import click
 from bullet import Bullet, ScrollBar, colors
+from click import Context
 from colorama import Fore
 
+from appd_api.appd_controller_service import AppDControllerService
 from routines.routine import OptionLeaf, Option, OptionNode, all_options
-from util.appd_api.appd_api import AppdApi
+from util.click_utils import appd_api
+from util.sys_utils import exit_with_message
 
 
-def begin_routine(controller: AppdApi, selected_option: Option):
+def begin_routine(controller_service: AppDControllerService, selected_option: Option):
     """Recursive function begin_routine"""
     if isinstance(selected_option, OptionLeaf):  # base case
-        apps = sorted(controller.get_applications(), key=lambda x: x.name)
+        result = controller_service.get_applications()
+        if result.error is not None:
+            exit_with_message(f"Error getting applications with status code {result.error.msg}")
+
+        apps = result.data
+
         cli = ScrollBar(
             f"Select An Application On Which To {selected_option.description}",
             [app.name for app in apps],
@@ -26,19 +34,19 @@ def begin_routine(controller: AppdApi, selected_option: Option):
             background_color=colors.background["black"],
             background_on_switch=colors.background["black"]
         )
-        application = cli.launch()
-        application_id = next(app.id for app in apps if app.name == application)
-        invoke_action_leaf(controller, application, application_id, selected_option)
-        # restart the main routine with all_options
+        application_name = cli.launch()
+        application_id = next(app.id for app in apps if app.name == application_name)
+        invoke_action_leaf(controller_service, application_name, application_id, selected_option)
 
         # move cursor up by # of apps shown on screen selection
         move_cursor_up_lines(len(apps) - 1 if len(apps) < 15 else 15)
 
-        begin_routine(controller, all_options)
+        # restart the main routine from beginning
+        begin_routine(controller_service, all_options)
 
     new_option = prompt_for_action(selected_option)
     # begin routine with the new option
-    begin_routine(controller, new_option)
+    begin_routine(controller_service, new_option)
 
 
 def prompt_for_action(option: OptionNode):
@@ -56,18 +64,23 @@ def prompt_for_action(option: OptionNode):
     return next_option
 
 
-def invoke_action_leaf(controller: AppdApi, application: str, application_id: int, selected_option: OptionLeaf):
+def invoke_action_leaf(
+        controller_service: AppDControllerService,
+        application: str,
+        application_id: int,
+        selected_option: OptionLeaf):
     click.echo(f"Attempting {selected_option.description} on {application}")
-    response = selected_option.action(controller, application_id, selected_option)
-    if response.status_code == selected_option.action_success_http_code:
-        click.echo(Fore.GREEN + f"Succeeded with code {response.status_code}")
-        time.sleep(2)
-        move_cursor_up_lines(2)
-    else:
-        click.echo(Fore.RED + f"Failed with code {response.status_code}")
+    result = selected_option.action(controller_service, application_id, selected_option)
+    if result.error is not None:
+        click.echo(Fore.RED + f"Failed with code {result.error.msg}")
         click.echo(f"See logs for details.")
         time.sleep(2)
         move_cursor_up_lines(3)
+    else:
+        click.echo(Fore.GREEN + f"Successfully invoked {selected_option.description}")
+        time.sleep(2)
+        move_cursor_up_lines(2)
+
 
 
 def move_cursor_up_lines(num_lines: int):

@@ -6,45 +6,49 @@ def composed(*decs):
         for dec in reversed(decs):
             f = dec(f)
         return f
+
     return deco
+
+
+cli = click.Group()
 
 
 def appd_api(func):
     return composed(
-           click.command(),
-           click.option('--host',
-                          prompt=True,
-                          help='acme.saas.appdynamics.com'),
-           click.option('--port',
-                          prompt=True,
-                          cls=DynamicOptionPrompt,
-                          default_option='host',
-                          default=lambda x: parse_port_number_from_host(x),
-                          help="""
+        cli.command(),
+        click.option('--host',
+                     prompt=True,
+                     help='acme.saas.appdynamics.com'),
+        click.option('--port',
+                     prompt=True,
+                     cls=DynamicOptionPrompt,
+                     default_option='host',
+                     default=lambda x: parse_port_number_from_host(x),
+                     help="""
                   \b
                   SaaS: 443
                   On Prem: 8090"""),
-           click.option('--ssl/--no-ssl',
-                          prompt=True,
-                          cls=DynamicOptionPrompt,
-                          is_flag=True,
-                          default_option='host',
-                          default=lambda x: parse_is_ssl_from_host(x)),
-           click.option('--accountname',
-                          prompt=True,
-                          cls=DynamicOptionPrompt,
-                          default_option='host',
-                          default=lambda x: parse_account_name_from_host(x),
-                          help="""
+        click.option('--ssl/--no-ssl',
+                     prompt=True,
+                     cls=DynamicOptionPrompt,
+                     is_flag=True,
+                     default_option='host',
+                     default=lambda x: parse_is_ssl_from_host(x)),
+        click.option('--accountname',
+                     prompt=True,
+                     cls=DynamicOptionPrompt,
+                     default_option='host',
+                     default=lambda x: parse_account_name_from_host(x),
+                     help="""
                   \b
                   SaaS: first segment of controller host
                   On Prem: customer1"""),
-           click.option('--username',
-                          prompt=True,
-                          help='must use local account'),
-           click.option('--password',
-                          prompt=True,
-                          hide_input=True)
+        click.option('--username',
+                     prompt=True,
+                     help='must use local account'),
+        click.option('--pwd',
+                     prompt=True,
+                     hide_input=True)
     )(func)
 
 

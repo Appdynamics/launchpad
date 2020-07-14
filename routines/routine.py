@@ -11,7 +11,6 @@ class Option:
 @dataclass
 class OptionLeaf(Option):
     action: types.LambdaType
-    action_success_http_code: int
 
 
 @dataclass
@@ -27,21 +26,18 @@ all_options = OptionNode(
             options=[
                 OptionLeaf(
                     description="Create Empty Application (Coming Soon)",
-                    action=lambda controller, application_id, action: \
-                        controller.create_new_application(),
-                    action_success_http_code=200
+                    action=lambda controller_service, application_id, action:
+                    controller_service.create_new_application()
                 ),
                 OptionLeaf(
                     description="Disable Service Endpoint Detection",
-                    action=lambda controller, application_id, option: \
-                        controller.disable_sep_detection_for_all_endpoint_types(application_id),
-                    action_success_http_code=200
+                    action=lambda controller_service, application_id, option:
+                    controller_service.disable_sep_detection_for_all_endpoint_types(application_id)
                 ),
                 OptionLeaf(
                     description="Enable BT Lockdown & Enable Auto BT Cleanup",
-                    action=lambda controller, application_id, option: \
-                        controller.enable_bt_lockdown(application_id=application_id),
-                    action_success_http_code=204
+                    action=lambda controller_service, application_id, option:
+                    controller_service.enable_bt_lockdown(application_id=application_id)
                 )
             ]
         ),
@@ -53,19 +49,16 @@ all_options = OptionNode(
                     options=[
                         OptionLeaf(
                             description="Overall Dashboard (Coming Soon)",
-                            action=lambda controller, application_id, option: \
-                                controller.deploy_dashboard_helper(application_id, option.description),
-                            action_success_http_code=200
+                            action=lambda controller_service, application_id, option:
+                            controller_service.deploy_dashboard_helper(application_id, option.description)
                         ), OptionLeaf(
                             description="Tier Dashboard (Coming Soon)",
-                            action=lambda controller, application_id, option: \
-                                controller.deploy_dashboard_helper(application_id, option.description),
-                            action_success_http_code=200
+                            action=lambda controller_service, application_id, option:
+                            controller_service.deploy_dashboard_helper(application_id, option.description)
                         ), OptionLeaf(
                             description="Node Dashboard (Coming Soon)",
-                            action=lambda controller, application_id, option: \
-                                controller.deploy_dashboard_helper(application_id, option.description),
-                            action_success_http_code=200
+                            action=lambda controller_service, application_id, option:
+                            controller_service.deploy_dashboard_helper(application_id, option.description)
                         )
                     ]
                 ),
@@ -74,27 +67,23 @@ all_options = OptionNode(
                     options=[
                         OptionLeaf(
                             description="DEPLOY ALL (Coming Soon)",
-                            action=lambda controller, application_id, option: \
-                                controller.deploy_healthrule_helper(application_id, option.description),
-                            action_success_http_code=200
+                            action=lambda controller_service, application_id, option:
+                            controller_service.deploy_healthrule_helper(application_id, option.description)
                         ), OptionLeaf(
                             description="CPU Usage (Coming Soon)",
-                            action=lambda controller, application_id, option: \
-                                controller.deploy_healthrule_helper(application_id, option.description),
-                            action_success_http_code=200
+                            action=lambda controller_service, application_id, option:
+                            controller_service.deploy_healthrule_helper(application_id, option.description)
                         ), OptionLeaf(
                             description="Memory Usage (Coming Soon)",
-                            action=lambda controller, application_id, option: \
-                                controller.deploy_healthrule_helper(application_id, option.description),
-                            action_success_http_code=200
+                            action=lambda controller_service, application_id, option:
+                            controller_service.deploy_healthrule_helper(application_id, option.description)
                         )
                     ]
                 ),
                 OptionLeaf(
                     description="Email Template (Coming Soon)",
-                    action=lambda controller, application_id, option: \
-                        controller.deploy_email_template(application_id),
-                    action_success_http_code=200
+                    action=lambda controller_service, application_id, option:
+                    controller_service.deploy_email_template(application_id)
                 )
             ]
         ),
@@ -103,21 +92,18 @@ all_options = OptionNode(
             options=[
                 OptionLeaf(
                     description="ServiceNow (Coming Soon)",
-                    action=lambda controller, application_id, option: \
-                        controller.deploy_http_request_template_helper(option.description),
-                    action_success_http_code=200
+                    action=lambda controller_service, application_id, option:
+                    controller_service.deploy_http_request_template_helper(option.description)
                 ),
                 OptionLeaf(
                     description="NetCool (Coming Soon)",
-                    action=lambda controller, application_id, option: \
-                        controller.deploy_http_request_template_helper(option.description),
-                    action_success_http_code=200
+                    action=lambda controller_service, application_id, option:
+                    controller_service.deploy_http_request_template_helper(option.description)
                 ),
                 OptionLeaf(
                     description="PagerDuty (Coming Soon)",
-                    action=lambda controller, application_id, option: \
-                        controller.deploy_http_request_template_helper(option.description),
-                    action_success_http_code=200
+                    action=lambda controller_service, application_id, option:
+                    controller_service.deploy_http_request_template_helper(option.description)
                 )
             ]
         ),
