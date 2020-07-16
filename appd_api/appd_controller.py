@@ -15,6 +15,8 @@ def raise_api_error(exc_type, exc_val, exc_tb):
 @error_handler(raise_api_error)
 class AppdController(Consumer):
     """Minimal python client for the AppDynamics API"""
+    jsessionid: str
+    xcsrftoken: str
 
     @params({"action": "login"})
     @get("/controller/auth")
@@ -41,11 +43,9 @@ class AppdController(Consumer):
     def disable_sep_detection(self, body: Body):
         """Disables service endpoint detection for an application"""
 
-    def deploy_dashboard_helper(self, application_id, dashboard_type):
-        # print("Deploying Dashboard " + dashboard_type + " on application " + str(application_id))
-        response = Response()
-        response.status_code = 200
-        return response
+    @post("/controller/dashkit/v4/dashboards")
+    def deploy_dash_studio_dashboard(self, body: Body) -> Response:
+        """Deploys Dash Studio dashboard"""
 
     def deploy_healthrule_helper(self, application_id, healthrule):
         # print("Deploying HealthRule " + healthrule + " on application " + str(application_id))

@@ -35,7 +35,7 @@ all_options = OptionNode(
                     controller_service.disable_sep_detection_for_all_endpoint_types(application_id)
                 ),
                 OptionLeaf(
-                    description="Enable BT Lockdown & Enable Auto BT Cleanup",
+                    description="Enable BT Lockdown & Disable Auto BT Cleanup",
                     action=lambda controller_service, application_id, option:
                     controller_service.enable_bt_lockdown(application_id=application_id)
                 )
@@ -48,17 +48,22 @@ all_options = OptionNode(
                     description="Deploy Dashboards",
                     options=[
                         OptionLeaf(
-                            description="Overall Dashboard (Coming Soon)",
+                            description="Application Dashboard",
                             action=lambda controller_service, application_id, option:
-                            controller_service.deploy_dashboard_helper(application_id, option.description)
+                            controller_service.deploy_dash_studio_dashboard(application_id, option.description)
                         ), OptionLeaf(
-                            description="Tier Dashboard (Coming Soon)",
+                            description="Tier Dashboard",
                             action=lambda controller_service, application_id, option:
-                            controller_service.deploy_dashboard_helper(application_id, option.description)
+                            controller_service.deploy_dash_studio_dashboard(application_id, option.description)
+                        ),
+                        OptionLeaf(
+                            description="Daily Trend Comparison Dashboard",
+                            action=lambda controller_service, application_id, option:
+                            controller_service.deploy_dash_studio_dashboard(application_id, option.description)
                         ), OptionLeaf(
-                            description="Node Dashboard (Coming Soon)",
+                            description="Weekly Trend Comparison Dashboard",
                             action=lambda controller_service, application_id, option:
-                            controller_service.deploy_dashboard_helper(application_id, option.description)
+                            controller_service.deploy_dash_studio_dashboard(application_id, option.description)
                         )
                     ]
                 ),

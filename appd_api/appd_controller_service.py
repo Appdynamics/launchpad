@@ -1,10 +1,12 @@
 import logging
 import re
+import sys
 from dataclasses import dataclass
 from typing import Any
 
 import click
 from click import Context
+from uplink import Body
 
 from appd_api.appd_controller import AppdController
 from appd_api.appd_dto import Application, dataclass_to_json
@@ -46,21 +48,22 @@ class AppDControllerService:
         if response.status_code is not 200:
             return Result(response, None)
 
-        jsessionid = None
-        xcsrftoken = None
         try:
             jsessionid = re.search('JSESSIONID=(\\w|\\d)*', response.headers['Set-Cookie']) \
                 .group(0).split('JSESSIONID=')[1]
+            self.controller.jsessionid = jsessionid
         except AttributeError:
             logging.info("JSESSIONID not returned, already logged in with valid credentials.")
         try:
             xcsrftoken = re.search('X-CSRF-TOKEN=(\\w|\\d)*', response.headers['Set-Cookie']) \
                 .group(0).split('X-CSRF-TOKEN=')[1]
+            self.controller.xcsrftoken = xcsrftoken
         except AttributeError:
             logging.info("X-CSRF-TOKEN not returned, already logged in with valid credentials.")
 
-        self.controller.session.headers['X-CSRF-TOKEN'] = xcsrftoken
-        self.controller.session.headers["Set-Cookie"] = f"JSESSIONID={jsessionid};X-CSRF-TOKEN={xcsrftoken};"
+        self.controller.session.headers['X-CSRF-TOKEN'] = self.controller.xcsrftoken
+        self.controller.session.headers[
+            "Set-Cookie"] = f"JSESSIONID={self.controller.jsessionid};X-CSRF-TOKEN={self.controller.xcsrftoken};"
         self.controller.session.headers['Content-Type'] = 'application/json;charset=UTF-8'
 
         return Result(self.controller, None)
@@ -97,3 +100,12 @@ class AppDControllerService:
         else:
             msg = ','.join(str(status_code) for status_code in status_codes)
             return Result(None, Result.Error(msg))
+
+    def deploy_dash_studio_dashboard(self, application_id: str, dashboard_name: str) -> Result:
+        """Deploys Dash Studio dashboard"""
+        self.login_to_controller()
+        dashboard_path = "resources/dashboards/dashStudio/" + dashboard_name + ".json"
+        dashboard_json = open(dashboard_path).read().replace("$APPLICATION_ID", str(application_id))
+        response = self.controller.deploy_dash_studio_dashboard(body=dashboard_json)
+        error = None if response.status_code == 200 else Result.Error(response.status_code)
+        return Result(None, error)
