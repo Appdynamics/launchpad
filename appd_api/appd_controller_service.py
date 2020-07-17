@@ -5,12 +5,15 @@ from dataclasses import dataclass
 from typing import Any
 
 import click
+from bullet import ScrollBar, colors
 from click import Context
 from uplink import Body
 
 from appd_api.appd_controller import AppdController
 from appd_api.appd_dto import Application, dataclass_to_json
+from routines.routine_runner import move_cursor_up_lines, prompt_for_application
 from util.click_utils import appd_api
+from util.sys_utils import exit_with_message
 from util.yaspin_utils import as_spinner
 
 
@@ -74,18 +77,21 @@ class AppDControllerService:
         error = None if response.status_code == 200 else Result.Error(response.status_code)
         return Result(applications, error)
 
-    def enable_bt_lockdown(self, application_id: int) -> Result:
+    def enable_bt_lockdown(self) -> Result:
+        application_id = prompt_for_application(self, f"Select an application to enable BT lockdown on.")
         self.login_to_controller()
         response = self.controller.enable_bt_lockdown(application_id)
         error = None if response.status_code == 204 else Result.Error(response.status_code)
         return Result(None, error)
 
-    def disable_sep_detection_for_all_endpoint_types(self, application_id: int) -> Result:
+    def disable_sep_detection_for_all_endpoint_types(self) -> Result:
         """Disables SEP detection for all available SEP entities"""
+        application_id = prompt_for_application(self, f"Select an application to disable SEP detection on.")
+        self.login_to_controller()
         disable_servlet_sep_body = open("resources/postBody/getSEPConfigs.json") \
             .read() \
             .replace("$APPLICATION_ID", str(application_id))
-        match_configs = self.controller.get_service_endpoint_match_configs(body=disable_servlet_sep_body)
+        match_configs = self.controller.get_service_endpoint_match_configs(disable_servlet_sep_body)
 
         responses = []
         for config in match_configs:
@@ -101,11 +107,12 @@ class AppDControllerService:
             msg = ','.join(str(status_code) for status_code in status_codes)
             return Result(None, Result.Error(msg))
 
-    def deploy_dash_studio_dashboard(self, application_id: str, dashboard_name: str) -> Result:
+    def deploy_dash_studio_dashboard(self, dashboard_name: str) -> Result:
         """Deploys Dash Studio dashboard"""
+        application_id = prompt_for_application(self, f"Select the default application for this template dashboard.")
         self.login_to_controller()
         dashboard_path = "resources/dashboards/dashStudio/" + dashboard_name + ".json"
         dashboard_json = open(dashboard_path).read().replace("$APPLICATION_ID", str(application_id))
-        response = self.controller.deploy_dash_studio_dashboard(body=dashboard_json)
-        error = None if response.status_code == 200 else Result.Error(response.status_code)
+        response = self.controller.deploy_dash_studio_dashboard(dashboard_json)
+        error = None if response.status_code == 200 else Result.Error(f"{response.status_code}\n{response.content}")
         return Result(None, error)

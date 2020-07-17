@@ -1,6 +1,5 @@
 import logging
 
-from click import Context
 from colorama import init as colorama_init, Fore
 
 from appd_api.appd_controller_service import AppDControllerService
